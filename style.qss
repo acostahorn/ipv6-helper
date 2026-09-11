@@ -1,0 +1,107 @@
+/* MainWindow Background */
+QMainWindow {
+    background-color: #f8f9fa;
+}
+
+/* Application Title */
+#applicationLabel {
+    font-size: 18px;
+    font-weight: bold;
+    color: #212529; /* Fixed 6-character hex and added missing semicolon */
+    padding-bottom: 5px;
+}
+
+/* Input Controls */
+QLineEdit {
+    padding: 8px 12px;
+    font-size: 18px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #ffffff;
+    selection-background-color: #0d6efd;
+}
+
+QLineEdit:focus {
+    border: 2px solid #0d6efd;
+}
+
+/* Buttons */
+QPushButton {
+    padding: 8px 18px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #0d6efd;
+    border: none;
+    border-radius: 6px;
+}
+
+QTextEdit {
+    padding: 8px 12px;
+    font-size: 12pt; /* Changed px to pt */
+    /* font-family: "Liberation Mono", monospace; */
+     font-family: "JetBrains Mono", "Fira Code", "Hack", monospace;
+    color: #212529;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #ffffff;
+    selection-background-color: #0d6efd;
+}
+QPushButton:hover {
+    background-color: #0b5ed7;
+}
+
+QPushButton:pressed {
+    background-color: #0a58ca;
+}
+
+/* Group Boxes (Block Grid Container) */
+QGroupBox {
+    font-size: 13px;
+    font-weight: bold;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding-top: 15px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    left: 10px;
+}
+
+/* Read-only Hex Block Fields */
+.BlockEdit {
+    font-family: "Courier New", monospace;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    color: #343a40;
+}
+
+/* Output / Status Field Base */
+#statusOutput {
+    /* font-family: "Cantarell", sans-serif; */
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 8px;
+}
+
+/* Dynamic Property States for Success/Error */
+#statusOutput[status="success"] {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border-color: #badbcc;
+}
+
+#statusOutput[status="error"] {
+    background-color: #f8d7da;
+    color: #842029;
+    border-color: #f5c2c7;
+}

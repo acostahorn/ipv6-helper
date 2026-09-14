@@ -235,3 +235,14 @@ std::array<uint16_t, 8> IPv6Parser::calculateLastAddress(const std::array<uint16
     return result;
 
 }
+
+std::array<int, 2>IPv6Parser::quartetTo2Int(uint16_t quartet) {
+    int secondHalf = quartet & 0x00FF;
+    int firstHalf = (quartet & 0xFF00) >> 8;
+    std::array <int, 2> result;
+    result[0] = firstHalf;
+    result[1] = secondHalf;
+
+    return result;
+
+}

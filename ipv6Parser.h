@@ -24,6 +24,8 @@ public:
     static std::array<uint16_t, 8> applyMask(const std::array<uint16_t,8>& ip, const std::array<uint16_t,8>& mask);
 
     static std::array<uint16_t, 8> calculateLastAddress(const std::array<uint16_t, 8>& netId, const std::array<uint16_t, 8>& mask);
+
+    static std::array<int, 2>quartetTo2Int(uint16_t quartet); 
     
 
    

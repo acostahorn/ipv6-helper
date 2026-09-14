@@ -66,6 +66,8 @@ void IPv6Helper::onSubmitClicked()
 
     auto cidr = IPv6Parser::checkEnteredCidr(cidrStr);
 
+    bool translatable = false;
+
     if (!cidr.has_value())
     {
         m_outputArea->setPlainText("Invalid CIDR value");
@@ -76,6 +78,17 @@ void IPv6Helper::onSubmitClicked()
     {
 
         IPv6Parser::IPv6Address ip(result.value());
+
+        int zeroCount = 0;
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (ip.blocks[i] == 0)
+                ++zeroCount;
+        }
+
+        if (zeroCount == 5 && ip.blocks[5] == 0xffff)
+            translatable = true;
 
         std::string canonicalStr = ip.toFullString();
 
@@ -114,7 +127,8 @@ void IPv6Helper::onSubmitClicked()
         IPv6Parser::IPv6Address firstUsableAddress;
         std::array<uint16_t, 8> firstUsableBlocks = networkIDArray;
 
-        if (cidr.value()<127) firstUsableBlocks[7] += 1; // Increment the final 16-bit block
+        if (cidr.value() < 127)
+            firstUsableBlocks[7] += 1; // Increment the final 16-bit block
         firstUsableAddress.blocks = firstUsableBlocks;
         std::string firstUsableString = firstUsableAddress.toFullString();
 
@@ -122,7 +136,6 @@ void IPv6Helper::onSubmitClicked()
         std::array<uint16_t, 8> lastAddressBlocks = IPv6Parser::calculateLastAddress(network_id.getBlocks(), mask);
         lastAddress.blocks = lastAddressBlocks;
         std::string lastAddrString = lastAddress.toFullString();
-
 
         html += QString("<tr>"
                         "<td>Subnet Mask:</td>"
@@ -149,9 +162,33 @@ void IPv6Helper::onSubmitClicked()
                         "<td>Number of Addresses:</td>"
                         "<td><b>2^%1</b></td>"
                         "</tr>")
-                    .arg(128-cidr.value());
+                    .arg(128 - cidr.value());
+
+        if (translatable)
+        {
+            std::string ipv4String = "";
+            for (int j = 6; j < 8; ++j)
+            {
+                ipv4String += std::to_string(IPv6Parser::quartetTo2Int(ip.blocks[j])[0]);
+                ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(ip.blocks[j])[1]);
+                if (j == 6) ipv4String +=".";
+            }
+
+            html += QString("<tr>"
+                        "<td>IPv4 Address:</td>"
+                        "<td><b>%1</b></td>"
+                        "</tr>")
+                    .arg(ipv4String.c_str());
+                
+
+
+        }
+
 
         html += "</table>";
+        if (translatable && cidr.value()<96) {
+            html +="<p><i>Note: Prefix &lt; /96 spans outside the IPv4-mapped address space</i><p>";
+        }
 
         m_outputArea->setHtml(html);
     }

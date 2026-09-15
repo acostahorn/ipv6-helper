@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <vector>
 #include <algorithm>
+#include <format>
 
 IPv6Parser::IPv6Parser()
 {
@@ -26,6 +27,9 @@ std::optional<std::array<std::string, 8>> IPv6Parser::parseShorthand(std::string
     std::string previous_string = "";
     int colon_count = 0;
     bool isThereDoubleColon = false;
+    itIsAnIPv4 = false;
+
+    shorthand = IPv6Parser::checkForIPv4(shorthand);
 
     int lg = shorthand.size();
     // GUARDRAIL: Single leading colon check
@@ -198,51 +202,120 @@ std::optional<int> IPv6Parser::checkEnteredCidr(std::string cidrString)
     return num;
 }
 
-std::array<uint16_t, 8> IPv6Parser::createIPv6Mask(int cidr) {
+std::array<uint16_t, 8> IPv6Parser::createIPv6Mask(int cidr)
+{
     std::array<uint16_t, 8> mask = {0};
-    int full_blocks = cidr/16;
-    for (int i = 0; i<full_blocks; i++) {
+    int full_blocks = cidr / 16;
+    for (int i = 0; i < full_blocks; i++)
+    {
         mask[i] = 0xFFFFFFFF;
     }
 
-    if (full_blocks < 8) {
+    if (full_blocks < 8)
+    {
         int remainder = cidr % 16;
-        if (remainder > 0) {
+        if (remainder > 0)
+        {
             mask[full_blocks] = static_cast<uint16_t>(0xFFFF << 16 - remainder);
         }
     }
     return mask;
-
 }
 
-std::array<uint16_t, 8> IPv6Parser::applyMask(const std::array<uint16_t,8>& ip, const std::array<uint16_t,8>& mask) {
+std::array<uint16_t, 8> IPv6Parser::applyMask(const std::array<uint16_t, 8> &ip, const std::array<uint16_t, 8> &mask)
+{
     std::array<uint16_t, 8> result = {0};
-    for (int i=0; i<8; i++) {
+    for (int i = 0; i < 8; i++)
+    {
         result[i] = ip[i] & mask[i];
-
     }
     return result;
-
 }
 
-std::array<uint16_t, 8> IPv6Parser::calculateLastAddress(const std::array<uint16_t, 8>& netId, const std::array<uint16_t, 8>& mask) {
-    
+std::array<uint16_t, 8> IPv6Parser::calculateLastAddress(const std::array<uint16_t, 8> &netId, const std::array<uint16_t, 8> &mask)
+{
+
     std::array<uint16_t, 8> result;
-    for (int i = 0; i<8; ++i) {
+    for (int i = 0; i < 8; ++i)
+    {
         result[i] = netId[i] | (~mask[i]);
-
     }
     return result;
-
 }
 
-std::array<int, 2>IPv6Parser::quartetTo2Int(uint16_t quartet) {
+std::array<int, 2> IPv6Parser::quartetTo2Int(uint16_t quartet)
+{
     int secondHalf = quartet & 0x00FF;
     int firstHalf = (quartet & 0xFF00) >> 8;
-    std::array <int, 2> result;
+    std::array<int, 2> result;
     result[0] = firstHalf;
     result[1] = secondHalf;
 
     return result;
+}
 
+std::string IPv6Parser::checkForIPv4(std::string &shorthand)
+{
+    std::vector<std::string> IPv4Values = {};
+    std::string currentString = "";
+    int lg = shorthand.size();
+    for (int i = 0; i < lg; ++i)
+    {
+        char ch = shorthand[i];
+        if (ch == '.')
+        {
+            if (i == 0 || i == lg-1)
+            {
+                fprintf(stderr, "\nNot an IPv4 string");
+                fflush(stderr);
+                return shorthand;
+            }
+            IPv4Values.push_back(currentString);
+            currentString = "";
+        }
+        else if (std::isdigit(static_cast<unsigned char>(ch)))
+        {
+            currentString += ch;
+        }
+        else
+        {
+            fprintf(stderr, "\nNot an IPv4 string");
+            fflush(stderr);
+            return shorthand;
+        }
+    }
+    IPv4Values.push_back(currentString);
+    if (IPv4Values.size() != 4) {
+          fprintf(stderr, "\nToo many integer values");
+            fflush(stderr);
+            return shorthand;
+
+        
+    }
+
+    std::string ipv6String = "::ffff:";
+
+    for (int j = 0; j < 4; j += 2) {
+        int val1 = std::stoi(IPv4Values[j]);
+        int val2 = std::stoi(IPv4Values[j+1]);
+
+        // Range check to ensure values fit in a 0-255 byte
+        if (val1 > 255 || val2 > 255) {
+            fprintf(stderr, "\nOctet out of range");
+            return shorthand;
+        }
+
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(2) << std::hex << val1
+           << std::setfill('0') << std::setw(2) << std::hex << val2;
+
+        ipv6String += ss.str();
+        if (j == 0) {
+            ipv6String += ":";
+        }
+    }
+
+    IPv6Parser::itIsAnIPv4 = true;
+  
+    return ipv6String;
 }

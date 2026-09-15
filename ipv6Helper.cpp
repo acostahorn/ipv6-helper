@@ -74,6 +74,10 @@ void IPv6Helper::onSubmitClicked()
         return;
     }
 
+    if (IPv6Parser::itIsAnIPv4 == true) {
+        cidr.value() += 96;
+    }
+
     if (result.has_value())
     {
 

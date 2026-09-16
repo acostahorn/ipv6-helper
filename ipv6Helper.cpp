@@ -76,6 +76,10 @@ void IPv6Helper::onSubmitClicked()
 
     if (IPv6Parser::itIsAnIPv4 == true) {
         cidr.value() += 96;
+        if (cidr.value() > 128) {
+            m_outputArea->setHtml("<i>Invalid CIDR value for IPv4-mapped IPv6 address</i>");
+            return;
+        }
     }
 
     if (result.has_value())

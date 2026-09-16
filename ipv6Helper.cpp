@@ -175,12 +175,7 @@ void IPv6Helper::onSubmitClicked()
         if (translatable)
         {
             std::string ipv4String = "";
-            for (int j = 6; j < 8; ++j)
-            {
-                ipv4String += std::to_string(IPv6Parser::quartetTo2Int(ip.blocks[j])[0]);
-                ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(ip.blocks[j])[1]);
-                if (j == 6) ipv4String +=".";
-            }
+            ipv4String = IPv6Parser::IPv6ToIPv4String(ip.getBlocks());
 
             html += QString("<tr>"
                         "<td>IPv4 Address:</td>"
@@ -188,8 +183,6 @@ void IPv6Helper::onSubmitClicked()
                         "</tr>")
                     .arg(ipv4String.c_str());
                 
-
-
         }
 
 

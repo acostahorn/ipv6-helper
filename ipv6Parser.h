@@ -30,6 +30,8 @@ public:
     static std::string checkForIPv4 (std::string& shorthand);
 
     inline static bool itIsAnIPv4 = false;
+
+    static std::string IPv6ToIPv4String(const std::array<uint16_t, 8>& blocks);
    
 
     struct IPv6Address

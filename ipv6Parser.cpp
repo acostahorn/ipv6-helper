@@ -264,7 +264,7 @@ std::string IPv6Parser::checkForIPv4(std::string &shorthand)
         char ch = shorthand[i];
         if (ch == '.')
         {
-            if (i == 0 || i == lg-1)
+            if (i == 0 || i == lg - 1)
             {
                 fprintf(stderr, "\nNot an IPv4 string");
                 fflush(stderr);
@@ -285,22 +285,23 @@ std::string IPv6Parser::checkForIPv4(std::string &shorthand)
         }
     }
     IPv4Values.push_back(currentString);
-    if (IPv4Values.size() != 4) {
-          fprintf(stderr, "\nToo many integer values");
-            fflush(stderr);
-            return shorthand;
-
-        
+    if (IPv4Values.size() != 4)
+    {
+        fprintf(stderr, "\nToo many integer values");
+        fflush(stderr);
+        return shorthand;
     }
 
     std::string ipv6String = "::ffff:";
 
-    for (int j = 0; j < 4; j += 2) {
+    for (int j = 0; j < 4; j += 2)
+    {
         int val1 = std::stoi(IPv4Values[j]);
-        int val2 = std::stoi(IPv4Values[j+1]);
+        int val2 = std::stoi(IPv4Values[j + 1]);
 
         // Range check to ensure values fit in a 0-255 byte
-        if (val1 > 255 || val2 > 255) {
+        if (val1 > 255 || val2 > 255)
+        {
             fprintf(stderr, "\nOctet out of range");
             return shorthand;
         }
@@ -310,12 +311,34 @@ std::string IPv6Parser::checkForIPv4(std::string &shorthand)
            << std::setfill('0') << std::setw(2) << std::hex << val2;
 
         ipv6String += ss.str();
-        if (j == 0) {
+        if (j == 0)
+        {
             ipv6String += ":";
         }
     }
 
     IPv6Parser::itIsAnIPv4 = true;
-  
+
     return ipv6String;
+}
+
+// std::string twoQuartetsToIPv4String(uint16_t q1, uint16_t q2)
+// {
+//     std::string ipv4String = "";
+//     ipv4String += std::to_string(IPv6Parser::quartetTo2Int(q1)[0]);
+//     ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(q1)[1]);
+//     ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(q2)[0]);
+//     ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(q2)[1]);
+
+//     return ipv4String;
+// }
+std::string IPv6Parser::IPv6ToIPv4String(const std::array<uint16_t, 8>& blocks)
+{
+    std::string ipv4String = "";
+    ipv4String += std::to_string(IPv6Parser::quartetTo2Int(blocks[6])[0]);
+    ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(blocks[6])[1]);
+    ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(blocks[7])[0]);
+    ipv4String += "." + std::to_string(IPv6Parser::quartetTo2Int(blocks[7])[1]);
+
+    return ipv4String;
 }

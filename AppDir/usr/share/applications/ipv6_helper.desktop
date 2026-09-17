@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=IPv6 Helper
+Comment=IPv6 Subnet Calculator and IPv4 Mapper
+Exec=ipv6_helper
+Icon=ipv6_helper
+Categories=Network;Utility;
+Terminal=false
+
+
